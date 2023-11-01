@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Converter Lista de Músicas</title>
+    <style>
+		#input {
+            width: 99%; /* Defina a largura desejada aqui, pode ser em porcentagem */
+            /* Ou use uma largura fixa em pixels, por exemplo: width: 400px; */
+        }
+        body {
+            background-color: #000000; /* Cor de fundo preta */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        div {
+            text-align: center;
+            margin: 20px;
+            padding: 20px;
+            background-color: #FFFFFF; /* Cor de fundo branca para os contêineres */
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Sombra suave */
+        }
+
+        h1 {
+            color: #4CAF50; /* Cor do cabeçalho verde */
+        }
+
+        h2 {
+            color: #4CAF50; /* Cor do cabeçalho verde */
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #4CAF50; /* Borda verde */
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #4CAF50; /* Cor do botão verde */
+            color: #FFFFFF; /* Cor do texto branco */
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        pre {
+            white-space: pre-wrap; /* Quebra de linha automática */
+            font-size: 16px;
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+	<br>
+    <center><img src = "seleniumfy.png" , width="30%"></center>
+    <div>
+        <center><textarea id="input" rows="10" placeholder="Digite a lista no formato 'Artista - Música'"></textarea><br></center>
+        <button onclick="converter()">Converter</button><button onclick="salvarComoPython()">Salvar como .py</button>
+        
+
+    </div>
+    
+    <div>
+        <h2>Resultado</h2>
+        <pre id="resultado"></pre>
+    </div>
+
+
+    <script>
+        function converter() {
+            const inputText = document.getElementById('input').value;
+            const lines = inputText.split('\n');
+            const output = [];
+
+            for (const line of lines) {
+                const [artista, musica] = line.split(' - ');
+                if (artista && musica) {
+                    output.push({'artista': artista.trim(), 'musica': musica.trim()});
+                }
+            }
+        
+         
+            const resultado = JSON.stringify(output, null, 4);
+            document.getElementById('resultado').textContent = resultado;
+            // Adicionando o resultado ao armazenamento local para a função de cópia
+            localStorage.setItem('resultado', resultado);
+            const textareaTemp = document.createElement('textarea');
+            textareaTemp.value = resultado;
+            document.body.appendChild(textareaTemp);
+
+            textareaTemp.select();
+            document.execCommand('copy');
+            document.body.removeChild(textareaTemp);
+
+            alert('Resultado copiado para a área de transferência!');
+        }
+    </script>
+    <script>        
+        function salvarComoPython() {
+            const resultado = localStorage.getItem('resultado');
+
+            if (resultado) {
+                const pythonCode = `# Resultado da conversão\nresultado = ${resultado};\n`;
+                const blob = new Blob([pythonCode], { type: 'text/plain' });
+
+                const a = document.createElement('a');
+                a.style.display = 'none';
+
+                a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(pythonCode);
+                a.download = 'resultado.py';
+
+                document.body.appendChild(a);
+                a.click();
+
+                document.body.removeChild(a);
+            } else {
+                alert('Você precisa primeiro converter e copiar o resultado antes de salvar como .py.');
+            }
+        }
+    </script>
+</body>
+</html>
+
